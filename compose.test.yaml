@@ -1,0 +1,17 @@
+name: ashensupport-test
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: ashen
+      POSTGRES_PASSWORD: ashen-test-only
+      POSTGRES_DB: ashen_test
+    ports:
+      - "127.0.0.1:55439:5432"
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U ashen -d ashen_test]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    tmpfs:
+      - /var/lib/postgresql/data

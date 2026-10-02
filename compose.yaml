@@ -1,0 +1,66 @@
+name: ashensupport
+x-backend: &backend
+  build: ./backend
+  env_file: .env
+  environment:
+    ASHEN_DATABASE_URL: postgresql+psycopg://ashen:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/ashen
+  volumes:
+    - ./fixtures:/fixtures:ro
+  restart: unless-stopped
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: ashen
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: ashen
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U ashen -d ashen]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  migrate:
+    <<: *backend
+    command: [sh, -c, "alembic upgrade head && python -m app.cli seed"]
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+  api:
+    <<: *backend
+    command: [uvicorn, app.main:app, --host, 0.0.0.0, --port, '8000', --proxy-headers, --forwarded-allow-ips, '172.29.83.10']
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+  worker:
+    <<: *backend
+    command: [python, -m, app.worker]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+  web:
+    build: ./frontend
+    ports:
+      - "127.0.0.1:${ASHEN_WEB_PORT:-8180}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      default:
+        ipv4_address: 172.29.83.10
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.29.83.0/24
+volumes:
+  pgdata:

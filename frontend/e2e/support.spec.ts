@@ -1,0 +1,37 @@
+import { test,expect } from '@playwright/test'
+test('RAG task, citation, draft approval, refresh and ticket',async({page})=>{
+  await page.goto('/support')
+  await page.getByRole('button',{name:'RAG 无法回答'}).click()
+  await page.getByRole('button',{name:'开始排查'}).click()
+  await expect(page.getByRole('button',{name:'生成工单草稿'})).toBeVisible({timeout:45000})
+  await expect(page.locator('.citation').first()).toBeVisible()
+  await page.reload()
+  await page.getByRole('button',{name:'生成工单草稿'}).click()
+  await page.getByRole('button',{name:'批准并创建'}).click()
+  await expect(page.getByText('工单已创建')).toBeVisible()
+  await page.getByRole('link',{name:'工单',exact:true}).click()
+  await expect(page.locator('.list-row')).toHaveCount(1)
+})
+test('cache scenario on mobile has no horizontal overflow',async({page})=>{
+  await page.setViewportSize({width:390,height:844})
+  await page.goto('/support')
+  await page.getByRole('button',{name:'缓存服务异常'}).click()
+  await page.getByRole('button',{name:'开始排查'}).click()
+  await expect(page.getByRole('button',{name:'生成工单草稿'})).toBeVisible({timeout:45000})
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy()
+  await page.getByRole('button',{name:'任务与来源'}).click()
+  await expect(page.getByRole('heading',{name:'来源',exact:true})).toBeVisible()
+})
+test('unknown question waits for information and refuses after limit',async({page})=>{
+  await page.goto('/support')
+  await page.getByRole('button',{name:'信息不足',exact:false}).click()
+  await page.getByRole('button',{name:'开始排查'}).click()
+  for(let i=0;i<3;i++){
+    await expect(page.getByRole('button',{name:'提交补充'})).toBeVisible({timeout:45000})
+    await page.getByRole('textbox',{name:'问题描述'}).fill('暂时没有其他信息')
+    await page.getByRole('button',{name:'提交补充'}).click()
+    await expect(page.getByRole('textbox',{name:'问题描述'})).toHaveValue('')
+  }
+  await expect(page.getByRole('button',{name:'生成工单草稿'})).toBeVisible({timeout:45000})
+  await expect(page.getByRole('region',{name:'支持对话'}).getByText('证据不足，无法可靠定位故障。请由维护者核对环境。')).toBeVisible()
+})

@@ -1,0 +1,302 @@
+{
+  "created_at": "20261002T141205Z",
+  "suite": "smoke",
+  "provider": "fake",
+  "mode": "vector",
+  "model": "deterministic-fake-v1",
+  "dataset_sha256": "6e4c1d77d7ea98a831fa994edbc3e24e42f112a191c1b4a15c8eef50846acde8",
+  "corpus_manifest_sha256": "ea081ae06ce33bdbce1e315f65ba80b2672e0ba63fb6000db780d62221dc0323",
+  "human_review": "pending",
+  "recall_at_5": null,
+  "citation_support_rate": null,
+  "answer_accuracy": null,
+  "cost": null,
+  "automated_contract_passed": 3,
+  "total": 3,
+  "p50_ms": 16,
+  "p95_ms": 844,
+  "outcomes": [
+    {
+      "id": "direct-01",
+      "status": "ok",
+      "answer": {
+        "action": "answer",
+        "summary": "请先核对依赖健康与功能开关，再按文档逐项排查。此结果由确定性演示引擎生成。",
+        "facts": [
+          "已检索当前项目文档；诊断观察见执行记录。"
+        ],
+        "causes": [],
+        "steps": [
+          "核对文档中的部署版本与当前环境。",
+          "检查依赖是否就绪，并核对功能开关。",
+          "记录错误与复现步骤，必要时创建工单。"
+        ],
+        "missing_information": [],
+        "citation_ids": [
+          "c12169a76f2e44aca49f00af9ed9298b",
+          "613e589d96364e7da0ba1e0ca618537c"
+        ],
+        "tool": null
+      },
+      "retrieved": [
+        {
+          "id": "c12169a76f2e44aca49f00af9ed9298b",
+          "content": "# Notes of Ashen\n\n![Go](https://img.shields.io/badge/Go-1.27-00ADD8?logo=go&logoColor=white)\n![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)\n![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)\n![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)\n![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)\n![MySQL](https://img.shields.io/badge/MySQL-8.4-4479A1?logo=mysql&logoColor=white)\n![Redis](https://img.shields.io/badge/Redis-7.4-DC382D?logo=redis&logoColor=white)\n![Docker Compose](https://img.shields.io/badge/Docker_Compose-ready-2496ED?logo=docker&logoColor=white)",
+          "heading": "Notes of Ashen",
+          "line_start": 1,
+          "line_end": 11,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "613e589d96364e7da0ba1e0ca618537c",
+          "content": "W -->|\"/api、RSS、Sitemap 反代\"| A\n        W -->|\"/media 静态读取\"| MD[(\"共享媒体卷\")]\n        A --> MD\n        MG --> M\n        A --> M\n        A --> R\n        A -. \"APP_RABBITMQ_ENABLED\" .-> MQ\n        A -. \"APP_SEARCH_ENABLED\" .-> ME\n        A -. \"APP_RAG_ENABLED\" .-> Q\n    end\n```\n\n默认常驻服务是 Web、API、MySQL 和 Redis，启动时还会运行 `config-check`、`migrate`、`public-site-check` 三个一次性任务。数据库迁移与配置检查成功后才启动 API。RabbitMQ、Meilisearch、Qdrant 分别属于 `messaging`、`search`、`rag` Compose profile；profile 与能力开关必须一致，否则启动检查失败。",
+          "heading": "Notes of Ashen / 架构",
+          "line_start": 50,
+          "line_end": 63,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "dbdacee3678c4f6ab5dbd57c858514fc",
+          "content": "# 首次启动及升级后先执行迁移；普通 API 启动不会代跑迁移。\ngo run ./cmd/notes-of-ashen -f etc/notes-of-ashen.yaml -migrate-only\ngo run ./cmd/notes-of-ashen -f etc/notes-of-ashen.yaml\n```\n\n后端默认在 `0.0.0.0:19000` 监听，可通过 `http://127.0.0.1:19000/healthz` 检查；仅本机开发时可设置 `APP_HOST=127.0.0.1`。Redis 是启动必需依赖，连接或认证失败会使 API 退出。",
+          "heading": "首次启动及升级后先执行迁移；普通 API 启动不会代跑迁移。",
+          "line_start": 178,
+          "line_end": 184,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "bb3077d80b894f6481cf31e9c88e89f1",
+          "content": "启动完成后访问 `http://127.0.0.1:1270`，注册第一个用户。默认逻辑下，第一个注册用户会成为管理员；如果邮箱服务保持默认关闭，首个管理员注册会自动跳过邮箱验证码，后续注册仍需要先启用并配置邮箱验证码能力。\n\n需要 RabbitMQ、Meilisearch 或 Qdrant 时，请在 `.env` 中同时设置 `COMPOSE_PROFILES` 与对应能力开关、凭据，详见 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)。",
+          "heading": "Windows PowerShell 使用：Copy-Item .env.example .env",
+          "line_start": 114,
+          "line_end": 117,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "700ae95c3d7047e7907f5339e1db3382",
+          "content": "## 许可\n\n当前仓库未提供项目级 `LICENSE`，不应将依赖库的许可证视为本项目源码或博客内容的授权。",
+          "heading": "从干净工作区构建不可变镜像并发布 / 许可",
+          "line_start": 292,
+          "line_end": 294,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "9e82ea06355c4a5e88b30d83896a0bac",
+          "content": "后台展示最近 30 天趋势。\n- 站点能力：RSS、Sitemap、SEO 动态 meta、可选 Prerender.io 预渲染、PWA、浅色／深色／跟随系统、自定义主题强调色、中英双语界面。目前六种风格为原有刊物、柔和新粗野、日式纸本、瑞士平面、经典新粗野、暗色书房，清单以 `frontend/src/store/themeStyles.ts` 为准。\n- 主题入口：导航栏「偏好 → 主题风格」（手机端先打开菜单）。风格与浅色／深色模式独立选择，保存到当前浏览器；默认保留原有刊物风格，自定义主题色会跨风格保留，「重置」恢复当前风格的默认色。\n- 安全设施：JWT + bcrypt、Redis 多维限流、可信反向代理链校验、AI 出口 SSRF 防护、CSP 安全头、非 root 容器运行。\n- 异步日志：通过 RabbitMQ 投递操作事件，并写入 `operation_logs`。\n- 统一响应：接口成功时返回 `{ \"code\": 0, \"message\": \"success\", \"data\": ... }`。",
+          "heading": "Notes of Ashen / 功能概览",
+          "line_start": 78,
+          "line_end": 84,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        }
+      ],
+      "expected_action": "answer",
+      "action_matches_draft_expectation": true,
+      "latency_ms": 844
+    },
+    {
+      "id": "direct-02",
+      "status": "ok",
+      "answer": {
+        "action": "answer",
+        "summary": "请先核对依赖健康与功能开关，再按文档逐项排查。此结果由确定性演示引擎生成。",
+        "facts": [
+          "已检索当前项目文档；诊断观察见执行记录。"
+        ],
+        "causes": [],
+        "steps": [
+          "核对文档中的部署版本与当前环境。",
+          "检查依赖是否就绪，并核对功能开关。",
+          "记录错误与复现步骤，必要时创建工单。"
+        ],
+        "missing_information": [],
+        "citation_ids": [
+          "dbc2654745664fc7986766792f041326",
+          "0241672805bc4feeb6e25c6d731ac78e"
+        ],
+        "tool": null
+      },
+      "retrieved": [
+        {
+          "id": "dbc2654745664fc7986766792f041326",
+          "content": "### 启动前端\n\n前端必须使用 `pnpm` 管理依赖（需要 Node.js 22）：\n\n```bash\ncd frontend\npnpm install --frozen-lockfile\npnpm dev\n```\n\n开发服务器默认监听 `http://127.0.0.1:3000`。Vite 开发代理会将 `/api` 与 `/media` 转发到 `http://127.0.0.1:19000`，可通过 `VITE_API_TARGET` 环境变量覆盖为远程后端地址。",
+          "heading": "首次启动及升级后先执行迁移；普通 API 启动不会代跑迁移。 / 启动前端",
+          "line_start": 185,
+          "line_end": 196,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "0241672805bc4feeb6e25c6d731ac78e",
+          "content": "# 当前数据库的已应用版本（需要配置开发或目标数据库）\ngo run ./cmd/notes-of-ashen -schema-version\n```\n\nAI 写作密钥采用 `v3:` 密文，由 `APP_AUTH_ACCESS_SECRET` 派生独立用途的加密密钥；`v2:` 旧密文需管理员重新录入，无前缀旧密文可兼容读取并在保存时迁移。RAG 密钥也依赖认证密钥派生。轮换认证密钥前保存必要凭据，轮换后核对并重新录入 AI / RAG Key。",
+          "heading": "当前数据库的已应用版本（需要配置开发或目标数据库）",
+          "line_start": 244,
+          "line_end": 249,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "c12169a76f2e44aca49f00af9ed9298b",
+          "content": "# Notes of Ashen\n\n![Go](https://img.shields.io/badge/Go-1.27-00ADD8?logo=go&logoColor=white)\n![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)\n![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)\n![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)\n![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)\n![MySQL](https://img.shields.io/badge/MySQL-8.4-4479A1?logo=mysql&logoColor=white)\n![Redis](https://img.shields.io/badge/Redis-7.4-DC382D?logo=redis&logoColor=white)\n![Docker Compose](https://img.shields.io/badge/Docker_Compose-ready-2496ED?logo=docker&logoColor=white)",
+          "heading": "Notes of Ashen",
+          "line_start": 1,
+          "line_end": 11,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "82409c055a6346a3ae6d6c2444c2582d",
+          "content": "# 已配置的运维环境中执行；备份默认保留 14 天\npwsh scripts/backup.ps1",
+          "heading": "已配置的运维环境中执行；备份默认保留 14 天",
+          "line_start": 255,
+          "line_end": 256,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "850647393f624875a26b70b13b34a444",
+          "content": "## 本地非 Docker 开发\n\n非 Docker 开发时，需要自行准备 MySQL 8.4 数据库 `notes_of_ashen` 和 Redis。默认 Compose 不向宿主暴露数据库端口，不能直接把其中的 `mysql:3306` / `redis:6379` 地址用于宿主 Go 进程。\n\n配置优先级为：**真实环境变量 → `.env` → YAML 默认值**。入口默认读取工作目录的 `.env`，可用 `APP_ENV_FILE` 指定另一份本地文件；解析器不展开 `${变量}` 引用。参考 [.env.example](.env.example) 配置至少以下项：\n\n| 变量 | 本地直跑要求 |\n| --- | --- |\n| `APP_DATABASE_DSN` | 指向宿主可达的 MySQL；保留 `parseTime=true`，使用独立开发库 |\n| `APP_AUTH_ACCESS_SECRET` | 自行生成稳定的强随机密钥，至少 16 字节 |\n| `APP_REDIS_ADDR` / `APP_REDIS_PASSWORD` | 指向开发 Redis，与实例认证配置一致 |\n| `APP_AUTH_COOKIE_SECURE` | HTTP 开发设为 `false` |\n| `APP_MEDIA_ROOT` | 使用可写的 `./data/media` 等本地路径，勿照抄容器路径 `/data/media` |\n| `APP_TRUSTED_PROXY_CIDRS` | 直连时留空；只有实际受信代理才加入 |",
+          "heading": "Windows PowerShell 使用：Copy-Item .env.example .env / 本地非 Docker 开发",
+          "line_start": 157,
+          "line_end": 171,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "57475c5f72d34b739606a9a78c07b0b3",
+          "content": "rShell 脚本\n├── test/                              # 集成测试代码与夹具\n├── Dockerfile.api                     # Go API 镜像构建文件\n├── Dockerfile.web                     # 前端 Nginx 镜像构建文件\n├── docker-compose.yml                 # Docker Compose 编排文件\n├── docker-compose.external-redis.yml  # 外部 Redis 覆盖编排\n├── AGENTS.md                          # AI 编码代理协作规范\n├── DESIGN.md                          # 前端设计系统文档\n└── .env.example                       # 环境变量模板\n```",
+          "heading": "Windows PowerShell 使用：Copy-Item .env.example .env / 项目结构",
+          "line_start": 146,
+          "line_end": 156,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        }
+      ],
+      "expected_action": "answer",
+      "action_matches_draft_expectation": true,
+      "latency_ms": 16
+    },
+    {
+      "id": "direct-03",
+      "status": "ok",
+      "answer": {
+        "action": "answer",
+        "summary": "请先核对依赖健康与功能开关，再按文档逐项排查。此结果由确定性演示引擎生成。",
+        "facts": [
+          "已检索当前项目文档；诊断观察见执行记录。"
+        ],
+        "causes": [],
+        "steps": [
+          "核对文档中的部署版本与当前环境。",
+          "检查依赖是否就绪，并核对功能开关。",
+          "记录错误与复现步骤，必要时创建工单。"
+        ],
+        "missing_information": [],
+        "citation_ids": [
+          "6dff7469239a4fefb091dcdc3815dbfc",
+          "068e810d2f4443438e54dc4beeac9450"
+        ],
+        "tool": null
+      },
+      "retrieved": [
+        {
+          "id": "6dff7469239a4fefb091dcdc3815dbfc",
+          "content": "可选服务保持关闭即可开发核心博客。使用外部可选服务且不使用 Compose 时，可不设置 `COMPOSE_PROFILES`；一旦定义该变量，后端会检查它与能力开关的一致性。",
+          "heading": "Windows PowerShell 使用：Copy-Item .env.example .env / 本地非 Docker 开发",
+          "line_start": 172,
+          "line_end": 173,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "068e810d2f4443438e54dc4beeac9450",
+          "content": "# 从干净工作区构建不可变镜像并发布\npwsh scripts/release.ps1\n```\n\n代码回退用 `pwsh scripts/release.ps1 -Rollback <旧tag>`，要求本地旧镜像存在且迁移版本兼容；它不会回退数据库结构。数据库与媒体恢复使用匹配的备份，完整流程见 [docs/OPERATIONS.md](docs/OPERATIONS.md)。",
+          "heading": "从干净工作区构建不可变镜像并发布",
+          "line_start": 257,
+          "line_end": 262,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "1019aa21b6a6479bbd11e339b68c2745",
+          "content": "## 架构\n\n```mermaid\nflowchart LR\n    U[\"浏览器 / 1Panel 反向代理\"] -->|\"127.0.0.1:1270<br/>（唯一宿主机端口）\"| W\n\n    subgraph compose[\"Docker Compose 内部网络 app\"]\n        W[\"web<br/>Nginx :8080<br/>静态前端 + 反向代理\"]\n        A[\"api<br/>Go 后端 :19000<br/>Prometheus :9101\"]\n        MG[\"migrate<br/>一次性迁移任务\"]\n        M[(\"mysql :3306\")]\n        R[(\"redis :6379\")]\n        MQ[\"rabbitmq :5672<br/>profile: messaging\"]\n        ME[\"meilisearch :7700<br/>profile: search\"]\n        Q[\"qdrant :6333<br/>profile: rag\"]",
+          "heading": "Notes of Ashen / 架构",
+          "line_start": 34,
+          "line_end": 49,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "bb3077d80b894f6481cf31e9c88e89f1",
+          "content": "启动完成后访问 `http://127.0.0.1:1270`，注册第一个用户。默认逻辑下，第一个注册用户会成为管理员；如果邮箱服务保持默认关闭，首个管理员注册会自动跳过邮箱验证码，后续注册仍需要先启用并配置邮箱验证码能力。\n\n需要 RabbitMQ、Meilisearch 或 Qdrant 时，请在 `.env` 中同时设置 `COMPOSE_PROFILES` 与对应能力开关、凭据，详见 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)。",
+          "heading": "Windows PowerShell 使用：Copy-Item .env.example .env",
+          "line_start": 114,
+          "line_end": 117,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "9e82ea06355c4a5e88b30d83896a0bac",
+          "content": "后台展示最近 30 天趋势。\n- 站点能力：RSS、Sitemap、SEO 动态 meta、可选 Prerender.io 预渲染、PWA、浅色／深色／跟随系统、自定义主题强调色、中英双语界面。目前六种风格为原有刊物、柔和新粗野、日式纸本、瑞士平面、经典新粗野、暗色书房，清单以 `frontend/src/store/themeStyles.ts` 为准。\n- 主题入口：导航栏「偏好 → 主题风格」（手机端先打开菜单）。风格与浅色／深色模式独立选择，保存到当前浏览器；默认保留原有刊物风格，自定义主题色会跨风格保留，「重置」恢复当前风格的默认色。\n- 安全设施：JWT + bcrypt、Redis 多维限流、可信反向代理链校验、AI 出口 SSRF 防护、CSP 安全头、非 root 容器运行。\n- 异步日志：通过 RabbitMQ 投递操作事件，并写入 `operation_logs`。\n- 统一响应：接口成功时返回 `{ \"code\": 0, \"message\": \"success\", \"data\": ... }`。",
+          "heading": "Notes of Ashen / 功能概览",
+          "line_start": 78,
+          "line_end": 84,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        },
+        {
+          "id": "58630122f12a41a3ab041551e2e77f44",
+          "content": "## 功能概览\n\n- 用户认证：注册、登录、退出、刷新 Token（HttpOnly Cookie）、找回密码；图形验证码与邮箱验证码；`user` / `editor` / `admin` 三级角色。\n- 文章管理：草稿、发布、归档、定时发布、置顶与显示优先级、版本查看与恢复、Markdown 导入/导出、SEO 字段。\n- 内容展示：公开列表与详情、上下篇与相关文章、按年月日展开的归档、点赞反馈、字数与预计阅读时长、文章目录、原生分享/复制链接。\n- Markdown 渲染：代码高亮（语言按需加载）、LaTeX 数学公式、Mermaid 图表、GFM 表格、图片灯箱。\n- AI 辅助创作（可选）：一键补全文章标题、slug、摘要、SEO 信息与分类/标签建议，摘要、润色、纠错、扩写、缩写、翻译；支持 `openai` 与 `anthropic` 两种 API 格式。\n- RAG 知识库问答（可选）：基于公开文章分段向量的 SSE 流式问答，私有会话历史，后台索引全量重建。\n- 全文搜索（可选）：Meilisearch 搜索与搜索建议，搜索关闭时回退 MySQL 查询。\n- 分类与标签：公开与后台文章数量展示，后台可创建、更新和删除。\n- 媒体库：本地持久化 JPEG/PNG/GIF/WebP/AVIF，内容 SHA-256 哈希去重，内容寻址静态服务与长期缓存。\n- 管理后台：仪表盘、用户管理、站点设置、项目管理、操作日志、页面/文章内容分析、依赖健康探测、口令加密备份与整站恢复。\n- 流量统计：公开页面自动上报 PV、UV 与来源，后台展示最近 30 天趋势。\n- 站点能力：RSS、Sitemap、SEO 动态 meta、可选 Prerender.io 预渲染、PWA、浅色／深色／跟随系统、自定义主题强调色、中英双语界面。目前六种风格为原有刊物、柔和新粗野、日式纸本、",
+          "heading": "Notes of Ashen / 功能概览",
+          "line_start": 66,
+          "line_end": 79,
+          "document": "README.md",
+          "version": "fixture-v1",
+          "version_id": "0f5dae59b1334a08bccc5ba1a437581f",
+          "source": ""
+        }
+      ],
+      "expected_action": "answer",
+      "action_matches_draft_expectation": true,
+      "latency_ms": 0
+    }
+  ]
+}
